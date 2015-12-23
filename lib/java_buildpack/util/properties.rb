@@ -39,6 +39,10 @@ module JavaBuildpack
           self[match_data[1]] = match_data[2] if match_data
         end
       end
+      
+      def self.write(file_name, props)
+        File.write(file_name, generate(props))
+      end
 
       private
 
@@ -49,6 +53,27 @@ module JavaBuildpack
       def comment_line?(line)
         line =~ /^[\s]*[#!].*$/
       end
+      
+    def self.generate(properties)
+        lines = []
+        properties.each do |key, value|
+          lines << build_line(key, value)
+        end
+        lines.join("\n")
+    end
+    
+    def self.build_line(key, value)
+      #encoded_key = Encoding.encode!(key.to_s.dup, *encoding_skips(false))
+      #encoded_value = Encoding.encode!(value.to_s.dup, *encoding_skips(true))
+      #encoded_key + '=' + encoded_value
+      key.to_s.dup + '=' + value.to_s.dup
+    end
+    
+    def self.encoding_skips(is_value)
+      skips = []
+      skips << Encoding::SKIP_SEPARATORS if is_value
+      skips
+    end
 
     end
 
